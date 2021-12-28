@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Eol</string>
+    <string name="play">play</string>
+    <string name="pause">pause</string>
+    <string name="skip_to_previous">skipToPrevious</string>
+    <string name="skip_to_next">skipToNext</string>
+    <string name="fast_forward">fastForward</string>
+    <string name="rewind">rewind</string>
+    <string name="order_play">orderPlay</string>
+    <string name="random_play">randomPlay</string>
+    <string name="single_play">singlePlay</string>
+    <string name="current_state">currentState</string>
+    <string name="skip_to_queue_item">skipToQueueItem</string>
+</resources>

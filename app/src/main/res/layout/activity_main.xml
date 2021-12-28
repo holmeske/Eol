@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/play"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:onClick="onClick"
+        android:text="@string/play"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/pause"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/pause"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:onClick="onClick"
+        android:text="@string/pause"
+        app:layout_constraintBottom_toBottomOf="@id/play"
+        app:layout_constraintLeft_toRightOf="@id/play"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/play" />
+
+    <Button
+        android:id="@+id/skip_to_previous"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:onClick="onClick"
+        android:text="@string/skip_to_previous"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/skip_to_next"
+        app:layout_constraintTop_toBottomOf="@id/play" />
+
+    <Button
+        android:id="@+id/skip_to_next"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:onClick="onClick"
+        android:text="@string/skip_to_next"
+        app:layout_constraintBottom_toBottomOf="@id/skip_to_previous"
+        app:layout_constraintLeft_toRightOf="@id/skip_to_previous"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/skip_to_previous" />
+
+
+    <Button
+        android:id="@+id/fast_forward"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:onClick="onClick"
+        android:text="@string/fast_forward"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/rewind"
+        app:layout_constraintTop_toBottomOf="@id/skip_to_previous" />
+
+    <Button
+        android:id="@+id/rewind"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:onClick="onClick"
+        android:text="@string/rewind"
+        app:layout_constraintBottom_toBottomOf="@id/fast_forward"
+        app:layout_constraintLeft_toRightOf="@id/fast_forward"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/fast_forward" />
+
+    <Button
+        android:id="@+id/order_play"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:onClick="onClick"
+        android:text="@string/order_play"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/random_play"
+        app:layout_constraintTop_toBottomOf="@id/fast_forward" />
+
+    <Button
+        android:id="@+id/random_play"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:onClick="onClick"
+        android:text="@string/random_play"
+        app:layout_constraintBottom_toBottomOf="@id/order_play"
+        app:layout_constraintLeft_toRightOf="@id/order_play"
+        app:layout_constraintRight_toLeftOf="@id/single_play"
+        app:layout_constraintTop_toTopOf="@id/order_play" />
+
+    <Button
+        android:id="@+id/single_play"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:onClick="onClick"
+        android:text="@string/single_play"
+        app:layout_constraintBottom_toBottomOf="@id/order_play"
+        app:layout_constraintLeft_toRightOf="@id/random_play"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/order_play" />
+
+    <Button
+        android:id="@+id/skip_to_queue_item"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:onClick="onClick"
+        android:text="@string/skip_to_queue_item"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/current_state"
+        app:layout_constraintTop_toBottomOf="@id/order_play" />
+
+    <Button
+        android:id="@+id/current_state"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:onClick="onClick"
+        android:text="@string/current_state"
+        app:layout_constraintBottom_toBottomOf="@id/skip_to_queue_item"
+        app:layout_constraintLeft_toRightOf="@id/skip_to_queue_item"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/order_play"
+        app:layout_constraintTop_toTopOf="@id/skip_to_queue_item" />
+</androidx.constraintlayout.widget.ConstraintLayout>
