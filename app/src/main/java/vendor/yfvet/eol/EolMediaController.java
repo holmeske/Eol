@@ -25,7 +25,7 @@ public class EolMediaController {
     private MediaController mediaController;
     private OnMetadataChangedListener onMetadataChangedListener;
     private int PLAY_MODE = -1;
-    private int STATE_FAST_FORWARD_REWIND;
+    private int STATE_FAST_FORWARD_REWIND = -1;
 
     public EolMediaController(Context context) {
         this.mContext = context;
