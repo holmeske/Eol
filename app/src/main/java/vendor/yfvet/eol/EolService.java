@@ -14,8 +14,6 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class EolService extends Service {
     private static final String TAG = "EolService";
@@ -298,13 +296,6 @@ public class EolService extends Service {
             valueResult[4] = (byte) second;
         }
         setProperty(value, valueResult);
-        TimerTask task =new TimerTask() {
-            @Override
-            public void run() {
-
-            }
-        };
-        new Timer().schedule(task,0,1000);
     }
 
     private void handleDiagnosticPlayPauseState(CarPropertyValue<?> value) {

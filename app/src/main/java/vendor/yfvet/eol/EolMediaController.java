@@ -14,6 +14,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -22,6 +23,7 @@ public class EolMediaController {
     private static final String TAG = "EolMediaController";
     private final Context mContext;
     private final MediaBrowser mediaBrowser;
+    private final List<MediaSession.QueueItem> mQueueItems = new ArrayList<>();
     private MediaController mediaController;
     private OnMetadataChangedListener onMetadataChangedListener;
     private int PLAY_MODE = -1;
@@ -65,8 +67,11 @@ public class EolMediaController {
                     @Override
                     public void onQueueChanged(@Nullable List<MediaSession.QueueItem> queue) {
                         super.onQueueChanged(queue);
+                        Log.d(TAG, "onQueueChanged() called with: queue = [" + queue + "]");
                         if (queue != null) {
-                            Log.d(TAG, "onQueueChanged() called with: queue = [" + queue.size() + "]");
+                            mQueueItems.clear();
+                            mQueueItems.addAll(queue);
+                            Log.d(TAG, "onQueueChanged() called with: mQueueItems = [" + mQueueItems.size() + "]");
                         } else {
                             Log.d(TAG, "onQueueChanged() called with: queue = [" + null + "]");
                         }
@@ -139,8 +144,8 @@ public class EolMediaController {
     }
 
     public void disconnect() {
+        Log.d(TAG, "disconnect() called");
         if (mediaBrowser != null) {
-            Log.d(TAG, "disconnect() called");
             mediaBrowser.disconnect();
         } else {
             Log.d(TAG, "mediaBrowser is null");
@@ -150,54 +155,45 @@ public class EolMediaController {
     public boolean skipToQueueItem(int index, int position) {
         Log.d(TAG, "skipToQueueItem() called with: index = [" + index + "], position = [" + position + "]");
         if (mediaController != null) {
-            List<MediaSession.QueueItem> queueItemList = mediaController.getQueue();
-            if (queueItemList != null) {
-                int size = queueItemList.size();
-                Log.d(TAG, "queueItemList size is " + size);
-                for (int i = 0; i < size; i++) {
-                    Log.d(TAG, "第" + i + "首, mediaId = " + queueItemList.get(i).getDescription().getMediaId()
-                            + ", title = " + queueItemList.get(i).getDescription().getTitle());
-                }
-                if (index < size) {
-                    MediaSession.QueueItem queueItem = queueItemList.get(index);
-                    String mediaId = queueItem.getDescription().getMediaId();
+            int size = mQueueItems.size();
+            Log.d(TAG, "queueItemList size is " + size);
+            for (int i = 0; i < size; i++) {
+                Log.d(TAG, "i = " + i + ", mediaId = " + mQueueItems.get(i).getDescription().getMediaId() + ", title = " + mQueueItems.get(i).getDescription().getTitle());
+            }
+            if (index < size) {
+                MediaSession.QueueItem queueItem = mQueueItems.get(index);
+                String mediaId = queueItem.getDescription().getMediaId();
 
-                    CharSequence desc = queueItem.getDescription().getDescription();
-                    long duration = Long.parseLong((String) desc);
+                CharSequence desc = queueItem.getDescription().getDescription();
+                long duration = Long.parseLong((String) desc);
 
-                    Log.d(TAG, "skip to mediaId = " + mediaId + ", duration = " + duration
-                            + ", title = " + queueItem.getDescription().getTitle());
+                Log.d(TAG, "skip to mediaId = " + mediaId + ", duration = " + duration + ", title = " + queueItem.getDescription().getTitle());
 
-                    mediaController.getTransportControls().playFromMediaId(mediaId, null);
+                mediaController.getTransportControls().playFromMediaId(mediaId, null);
 
-                    position *= 1000;
-                    if (position < duration) {
-                        int finalPosition = position;
-                        setOnMetadataChangedListener(id -> {
-                            Log.d(TAG, "OnMetadataChangedListener() called with: id = [" + id + "]");
-                            if (Objects.equals(mediaId, id)) {
-                                Log.d(TAG, "start seek to " + finalPosition);
-                                mediaController.getTransportControls().seekTo(finalPosition);
-                                Log.d(TAG, "unregister metadata change listener ");
-                                onMetadataChangedListener = null;
-                            }
-                        });
-                        return true;
-                    } else {
-                        Log.d(TAG, "skipToQueueItem: position is too larger , can not seek to");
-                        return false;
-                    }
-
+                position *= 1000;
+                if (position < duration) {
+                    int finalPosition = position;
+                    setOnMetadataChangedListener(id -> {
+                        Log.d(TAG, "OnMetadataChangedListener() called with: id = [" + id + "]");
+                        if (Objects.equals(mediaId, id)) {
+                            Log.d(TAG, "start seek to " + finalPosition);
+                            mediaController.getTransportControls().seekTo(finalPosition);
+                            Log.d(TAG, "unregister metadata change listener ");
+                            onMetadataChangedListener = null;
+                        }
+                    });
+                    return true;
                 } else {
-                    Log.d(TAG, "skipToQueueItem: index is too larger , can not skip to");
+                    Log.d(TAG, "skipToQueueItem: position is too larger, can not seek to");
                     return false;
                 }
             } else {
-                Log.d(TAG, "skipToQueueItem: queueItemList is null");
+                Log.e(TAG, "skipToQueueItem: index is too larger , can not skip to");
                 return false;
             }
         } else {
-            Log.d(TAG, "skipToQueueItem: mediaController is null");
+            Log.e(TAG, "skipToQueueItem: mediaController is null");
             return false;
         }
     }
@@ -229,7 +225,7 @@ public class EolMediaController {
             }
 
         } else {
-            Log.d(TAG, "getCurrentState: mediaController is null");
+            Log.e(TAG, "getCurrentState: mediaController is null");
         }
         Log.d(TAG, "getCurrentState: " + Arrays.toString(state));
         return state;
@@ -251,14 +247,14 @@ public class EolMediaController {
                             break;
                         }
                     } else {
-                        Log.d(TAG, "getIndexByMediaId: getDescription is null");
+                        Log.e(TAG, "getIndexByMediaId: getDescription is null");
                     }
                 }
             } else {
-                Log.d(TAG, "getIndexByMediaId: queueItemList is null");
+                Log.e(TAG, "getIndexByMediaId: queueItemList is null");
             }
         } else {
-            Log.d(TAG, "getIndexByMediaId: mediaController is null");
+            Log.e(TAG, "getIndexByMediaId: mediaController is null");
         }
         return index;
     }
@@ -306,18 +302,13 @@ public class EolMediaController {
     }
 
     private void setPlayMode(PlayMode playMode) {
-        //0 循环 , 1 随机 , 2 单曲
-        //1，随机 2，顺序 3，单曲循环
         Bundle bundle = new Bundle();
         int mode = -1;
         if (playMode == PlayMode.ORDER) {
-            //mode = 0;
             mode = 2;
         } else if (playMode == PlayMode.SINGLE) {
-            //mode = 2;
             mode = 3;
         } else if (playMode == PlayMode.RANDOM) {
-            //mode = 1;
             mode = 1;
         }
         Log.d(TAG, "mode = " + mode);
@@ -396,7 +387,7 @@ public class EolMediaController {
 
     private boolean mediaControllerNotNull() {
         if (mediaController == null) {
-            Log.d(TAG, "MediaController is null");
+            Log.e(TAG, "MediaController is null");
             return false;
         } else {
             return true;
