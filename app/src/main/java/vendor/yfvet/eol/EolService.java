@@ -52,6 +52,9 @@ public class EolService extends Service {
                 case CarYFEolManager.DIAG_EOL_RDBI_MEDIA_COMMAND_USB_IPOD_FORWARD_REWIND:
                     handleDiagnosticForwardState(value);
                     break;
+                case CarYFEolManager.DIAG_EOL_RDBI_MEDIA_IPOD_CP_CHIP_COMMUNICATION_STATUS:
+                    handleDiagnosticChipCommunicationState(value);
+                    break;
                 default:
                     break;
             }
@@ -343,6 +346,23 @@ public class EolService extends Service {
 
         setProperty(value, valueResult);
     }
+
+    private void handleDiagnosticChipCommunicationState(CarPropertyValue<?> value) {
+        Log.d(TAG, "handleDiagnosticChipCommunicationState() called with: PropertyId = [" + value.getPropertyId() + "]");
+
+        byte[] valueResult = {0x00, 0x01};
+
+        byte[] bsValue = (byte[]) value.getValue();
+        Log.d(TAG, "bsValue: " + Arrays.toString(bsValue));
+        //TODO: uxuxy270: need to finish the ChipCommunication State value
+        //1. valueResult[0] = 0x00; <positive response value> valueResult[1] = 0x01; <Chip status OK>
+        //                                                    valueResult[1] = 0x00; <Chip status NG>
+        //2. valueResult[0] = 0x22; <negative response value>
+        //Currently only response {0x00, 0x01}, need to finish logic to monitor MFi Auth IC states
+
+        setProperty(value, valueResult);
+    }
+
 
     /**
      * Returns true if the EolMediaController is not null.
