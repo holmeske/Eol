@@ -82,7 +82,7 @@ public class EolService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "onCreate() called 2022-09-08");
+        Log.d(TAG, "onCreate() called 2022-09-14");
 
         initCar();
 
@@ -320,13 +320,13 @@ public class EolService extends Service {
     private void handleDiagnosticMediaPlayModeState(CarPropertyValue<?> value) {
         Log.d(TAG, "handleDiagnosticMediaPlayModeState() called with: PropertyId = [" + value.getPropertyId() + "]");
 
-        byte[] valueResult = {0x00};
+        byte[] valueResult = {0x00, 0x00};
 
         byte[] bsValue = (byte[]) value.getValue();
         Log.d(TAG, "bsValue: " + Arrays.toString(bsValue));
 
         if (EolMediaControllerNotNull()) {
-            valueResult[0] = mEolMediaController.getCurrentPlayMode();
+            valueResult[1] = mEolMediaController.getCurrentPlayMode();
         }
 
         setProperty(value, valueResult);
