@@ -25,7 +25,6 @@ public class EolMediaController {
     private final MediaBrowser mediaBrowser;
     private final List<MediaSession.QueueItem> mQueueItems = new ArrayList<>();
     private MediaController mediaController;
-    private OnMetadataChangedListener onMetadataChangedListener;
     private int PLAY_MODE = -1;
     private int STATE_FAST_FORWARD_REWIND = -1;
 
@@ -58,9 +57,6 @@ public class EolMediaController {
                             Log.d(TAG, "onMetadataChanged() called with: description = [" + metadata.getDescription() + "]");
                         } else {
                             Log.d(TAG, "onMetadataChanged() called with: metadata = [" + null + "]");
-                        }
-                        if (onMetadataChangedListener != null) {
-                            onMetadataChangedListener.onMetadataChanged(metadata != null ? metadata.getDescription().getMediaId() : null);
                         }
                     }
 
@@ -139,10 +135,6 @@ public class EolMediaController {
         mediaBrowser.connect();
     }
 
-    public void setOnMetadataChangedListener(OnMetadataChangedListener onMetadataChangedListener) {
-        this.onMetadataChangedListener = onMetadataChangedListener;
-    }
-
     public void disconnect() {
         Log.d(TAG, "disconnect() called");
         if (mediaBrowser != null) {
@@ -173,16 +165,13 @@ public class EolMediaController {
 
                 position *= 1000;
                 if (position < duration) {
-                    int finalPosition = position;
-                    setOnMetadataChangedListener(id -> {
-                        Log.d(TAG, "OnMetadataChangedListener() called with: id = [" + id + "]");
-                        if (Objects.equals(mediaId, id)) {
-                            Log.d(TAG, "start seek to " + finalPosition);
-                            mediaController.getTransportControls().seekTo(finalPosition);
-                            Log.d(TAG, "unregister metadata change listener ");
-                            onMetadataChangedListener = null;
-                        }
-                    });
+                    try {
+                        Log.d(TAG, "after sleep 200ms, seekTo");
+                        Thread.sleep(200);
+                        mediaController.getTransportControls().seekTo(position);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     return true;
                 } else {
                     Log.d(TAG, "skipToQueueItem: position is too larger, can not seek to");
@@ -373,7 +362,7 @@ public class EolMediaController {
     }
 
     public byte getFastForwardRewindState() {
-        Log.d(TAG, "getCurrentPlayMode() called with: state_fast_forward_rewind = [" + STATE_FAST_FORWARD_REWIND + "]");
+        Log.d(TAG, "getFastForwardRewindState() called with: state_fast_forward_rewind = [" + STATE_FAST_FORWARD_REWIND + "]");
         if (STATE_FAST_FORWARD_REWIND == 1) {//fast forward
             return 0x01;
         } else if (STATE_FAST_FORWARD_REWIND == 2) {//rewind

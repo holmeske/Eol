@@ -17,6 +17,7 @@ import java.util.Arrays;
 
 public class EolService extends Service {
     private static final String TAG = "EolService";
+    private static final String DATA = " 2022-12-16";
     private EolMediaController mEolMediaController;
     private Car mCar;
     private CarYFEolManager mCarYFEolManager;
@@ -82,7 +83,7 @@ public class EolService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "onCreate() called 2022-09-14");
+        Log.d(TAG, "onCreate() called" + DATA);
 
         initCar();
 
@@ -91,13 +92,13 @@ public class EolService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand() called");
+        Log.d(TAG, "onStartCommand() called" + DATA);
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy() called");
+        Log.d(TAG, "onDestroy() called" + DATA);
         if (mCar != null) {
             mCar.disconnect();
         }
@@ -335,13 +336,13 @@ public class EolService extends Service {
     private void handleDiagnosticForwardState(CarPropertyValue<?> value) {
         Log.d(TAG, "handleDiagnosticForwardState() called with: PropertyId = [" + value.getPropertyId() + "]");
 
-        byte[] valueResult = {0x00};
+        byte[] valueResult = {0x00, 0x00};
 
         byte[] bsValue = (byte[]) value.getValue();
         Log.d(TAG, "bsValue: " + Arrays.toString(bsValue));
 
         if (EolMediaControllerNotNull()) {
-            valueResult[0] = mEolMediaController.getFastForwardRewindState();
+            valueResult[1] = mEolMediaController.getFastForwardRewindState();
         }
 
         setProperty(value, valueResult);
@@ -354,7 +355,7 @@ public class EolService extends Service {
 
         byte[] bsValue = (byte[]) value.getValue();
         Log.d(TAG, "bsValue: " + Arrays.toString(bsValue));
-        //TODO: uxuxy270: need to finish the ChipCommunication State value
+        // uxuxy270: need to finish the ChipCommunication State value
         //1. valueResult[0] = 0x00; <positive response value> valueResult[1] = 0x01; <Chip status OK>
         //                                                    valueResult[1] = 0x00; <Chip status NG>
         //2. valueResult[0] = 0x22; <negative response value>
@@ -383,6 +384,7 @@ public class EolService extends Service {
      * @param valueResult The value of the callback
      */
     private void setProperty(CarPropertyValue<?> value, byte[] valueResult) {
+        Log.d(TAG, "setProperty() called with: value = [" + value + "], valueResult = " + Arrays.toString(valueResult));
         try {
             mCarYFEolManager.setProperty(byte[].class, value.getPropertyId(), 0, valueResult);
         } catch (CarNotConnectedException e) {
