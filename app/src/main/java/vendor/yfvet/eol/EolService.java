@@ -11,13 +11,18 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
 public class EolService extends Service {
     private static final String TAG = "EolService";
-    private static final String DATA = " 2022-12-16";
+    private static final String DATA = "2023-08-02";
+
+    static {
+        System.loadLibrary("native-lib");
+    }
+
     private EolMediaController mEolMediaController;
     private Car mCar;
     private CarYFEolManager mCarYFEolManager;
@@ -83,7 +88,7 @@ public class EolService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "onCreate() called" + DATA);
+        Log.d(TAG, "onCreate() called " + DATA);
 
         initCar();
 
@@ -202,7 +207,9 @@ public class EolService extends Service {
             int cmd = bsValue[0];
             //01 : fast forward  02 : fast rewind
             if (EolMediaControllerNotNull()) {
-                if (cmd == 0x01) {
+                if (cmd == 0x00) {
+                    mEolMediaController.normal();
+                } else if (cmd == 0x01) {
                     mEolMediaController.fastForward();
                 } else if (cmd == 0x02) {
                     mEolMediaController.rewind();
@@ -351,15 +358,24 @@ public class EolService extends Service {
     private void handleDiagnosticChipCommunicationState(CarPropertyValue<?> value) {
         Log.d(TAG, "handleDiagnosticChipCommunicationState() called with: PropertyId = [" + value.getPropertyId() + "]");
 
-        byte[] valueResult = {0x00, 0x01};
+        byte fromJNI;
+        byte[] valueResult = {0x22, 0x00};
 
         byte[] bsValue = (byte[]) value.getValue();
         Log.d(TAG, "bsValue: " + Arrays.toString(bsValue));
-        // uxuxy270: need to finish the ChipCommunication State value
+
         //1. valueResult[0] = 0x00; <positive response value> valueResult[1] = 0x01; <Chip status OK>
         //                                                    valueResult[1] = 0x00; <Chip status NG>
         //2. valueResult[0] = 0x22; <negative response value>
         //Currently only response {0x00, 0x01}, need to finish logic to monitor MFi Auth IC states
+        fromJNI = byteFromJNI();
+        Log.d(TAG, "fromJNI: （0x01: Chip status OK, 0x00: Chip status NG.）" + fromJNI);
+
+        if (0x01 == fromJNI) {
+            valueResult[0] = 0x00;
+            valueResult[1] = 0x01;
+            Log.d(TAG, "Diagnostic MFi chip communication state OK.");
+        }
 
         setProperty(value, valueResult);
     }
@@ -391,4 +407,9 @@ public class EolService extends Service {
             e.printStackTrace();
         }
     }
+
+    /**
+     * JNI function to access MFi authentication coprocessor status
+     */
+    public native byte byteFromJNI();
 }

@@ -276,17 +276,32 @@ public class EolMediaController {
         }
     }
 
+    public void normal() {
+        Log.d(TAG, "normal() called");
+        if (mediaControllerNotNull()) {
+            Bundle bundle = new Bundle();
+            bundle.putInt("ForwardRewindMode", 3);
+            mediaController.getTransportControls().sendCustomAction("SEND_FAST_FORWARD", bundle);
+        }
+    }
+
     public void fastForward() {
         Log.d(TAG, "fastForward() called");
         if (mediaControllerNotNull()) {
-            mediaController.getTransportControls().fastForward();
+            // mediaController.getTransportControls().fastForward();//obsolete
+            Bundle bundle = new Bundle();
+            bundle.putInt("ForwardRewindMode", 1);
+            mediaController.getTransportControls().sendCustomAction("SEND_FAST_FORWARD", bundle);
         }
     }
 
     public void rewind() {
         Log.d(TAG, "rewind() called");
         if (mediaControllerNotNull()) {
-            mediaController.getTransportControls().rewind();
+            //mediaController.getTransportControls().rewind();//obsolete
+            Bundle bundle = new Bundle();
+            bundle.putInt("ForwardRewindMode", 2);
+            mediaController.getTransportControls().sendCustomAction("SEND_FAST_FORWARD", bundle);
         }
     }
 
